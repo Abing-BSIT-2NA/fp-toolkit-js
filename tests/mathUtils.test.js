@@ -1,32 +1,47 @@
-const add = (a) => (b) => a + b;
-const subtract = (a) => (b) => a - b;
-const multiply = (a) => (b) => a * b;
-const divide = (a) => (b) => a / b;
+const {
+  add, multiply, subtract, divide,
+  clamp, isEven, isOdd,
+  factorial, fibonacci, range
+} = require('../src/mathUtils');
 
-const clamp = (min, max, value) =>
-  Math.min(max, Math.max(min, value));
-
-const isEven = (n) => n % 2 === 0;
-const isOdd = (n) => n % 2 !== 0;
-
-const factorial = (n) =>
-  n <= 1 ? 1 : n * factorial(n - 1);
-
-const fibonacci = (n) =>
-  n <= 1 ? n : fibonacci(n - 1) + fibonacci(n - 2);
-
-const range = (start, end) =>
-  Array.from({ length: end - start + 1 }, (_, i) => start + i);
-
-module.exports = {
-  add,
-  subtract,
-  multiply,
-  divide,
-  clamp,
-  isEven,
-  isOdd,
-  factorial,
-  fibonacci,
-  range
+const test = (desc, fn) => {
+  try { 
+    fn(); 
+    console.log(`PASS: ${desc}`); 
+  } catch (e) { 
+    console.log(`FAIL: ${desc} | Expected: ${e.expected}, Got: ${e.received}`); 
+  }
 };
+
+const assertEqual = (received, expected) => {
+  if (JSON.stringify(received) !== JSON.stringify(expected))
+    throw { received, expected };
+};
+
+console.log("\n=== Math Utilities Tests ===");
+
+
+console.log("\nCurrying:");
+
+test('add(5)(3) returns 8', () => assertEqual(add(5)(3), 8));
+test('multiply(4)(5) returns 20', () => assertEqual(multiply(4)(5), 20));
+
+
+console.log("\nPartial Application:");
+const double = multiply(2);
+const add10 = add(10);
+
+test('double(7) returns 14', () => assertEqual(double(7), 14));
+test('add10(5) returns 15', () => assertEqual(add10(5), 15));
+
+
+console.log("\nPure Functions:");
+
+test('isEven(4) is true', () => assertEqual(isEven(4), true));
+test('isOdd(3) is true', () => assertEqual(isOdd(3), true));
+test('factorial(5) is 120', () => assertEqual(factorial(5), 120));
+test('fibonacci(6) is 8', () => assertEqual(fibonacci(6), 8));
+test('range(1, 5) returns [1,2,3,4]', () => assertEqual(range(1, 5), [1, 2, 3, 4]));
+test('clamp(0, 100, 150) returns 100', () => assertEqual(clamp(0, 100, 150), 100));
+
+console.log("\n=== Tests Complete ===\n");
