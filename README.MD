@@ -6,7 +6,7 @@ A functinal programming utility toolkit built with JavaScript.
 
 This project Demonstrates core functional programming concepts including pure functions, immutability, higher-order functions, function composition, and currying.
 
-## Project Structure 
+## Projectd Structure 
 
 -`src/arrayUtils.js` - Array transformation utilities 
 -`src/mathUtils.js` - Mathematical pure functions
