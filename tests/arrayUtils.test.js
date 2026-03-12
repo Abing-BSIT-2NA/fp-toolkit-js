@@ -1,67 +1,91 @@
-// Basic array operations
+const {
+    head, tail, last, init,
+    map, filter, reduce,
+    unique, flatten, groupBy,
+    partition, zip, take, sum 
+} = require('../src/arrayUtils');
 
-const head = (arr) => arr[0];
-
-const tail = (arr) => arr.slice(1);
-
-const last = (arr) => arr[arr.length - 1];
-
-const init = (arr) => arr.slice(0, -1);
-
-// Higher order functions
-
-const map = (fn, arr) => arr.map(fn);
-
-const filter = (predicate, arr) => arr.filter(predicate);
-
-const reduce = (fn, initial, arr) => arr.reduce(fn, initial);
-
-// Functional utilities
-
-const unique = (arr) => [...new Set(arr)];
-
-const flatten = (arr) =>
-  arr.reduce((acc, item) =>
-    acc.concat(Array.isArray(item) ? item : [item]), []);
-
-const groupBy = (fn, arr) =>
-  arr.reduce((groups, item) => {
-    const key = fn(item);
-    return {
-      ...groups,
-      [key]: [...(groups[key] || []), item]
-    };
-  }, {});
-
-const partition = (predicate, arr) =>
-  arr.reduce(
-    ([pass, fail], item) =>
-      predicate(item)
-        ? [[...pass, item], fail]
-        : [pass, [...fail, item]],
-    [[], []]
-  );
-
-const zip = (arr1, arr2) =>
-  arr1.map((item, index) => [item, arr2[index]]);
-
-const take = (n, arr) => arr.slice(0, n);
-
-const sum = (arr) => arr.reduce((acc, n) => acc + n, 0);
-
-module.exports = {
-  head,
-  tail,
-  last,
-  init,
-  map,
-  filter,
-  reduce,
-  unique,
-  flatten,
-  groupBy,
-  partition,
-  zip,
-  take,
-  sum
+const test = (description, fn) => {
+    try{
+        fn();
+        console.log(`  PASS: ${description}`);
+    } catch (error) {
+        console.log(`  FAIL: ${description}`);
+        console.log(`    Expected: ${error.expected}`);
+        console.log(`    Received: ${error.received}`);
+    }
 };
+
+const assertEqual = (received, expected) => {
+    const r = JSON.stringify(received);
+    const e = JSON.stringify(expected);
+    if (r !== e) throw { received: r, expected: e };
+};
+
+console.log('\n=== Array Utilities Tests ===');
+
+
+console.log('\nBasic Operation: ');
+test('head returns first element', () =>
+    assertEqual(head([1, 2, 3]), 1));
+
+test('tail returns all except first', () =>
+    assertEqual(tail([1, 2, 3]), 1));
+
+test('last returns last element', () =>
+    assertEqual(last([1, 2, 3]), 3));
+
+test('init returns all except last', () =>
+    assertEqual(init([1, 2, 3]), [1, 2])); 
+
+
+console.log('\nHigher-Order Functions:');
+test('map doubles each element', () =>
+    assertEqual(map(x => x * 2, [1, 2, 3]), [2, 4, 6])); 
+
+test('filter keeps even numbers', () =>
+    assertEqual(filter(x => x % 2 === 0, [1, 2, 3, 4, 5]), [2, 4]));
+
+test('reduce sums elements', () =>
+    assertEqual(reduce((acc, x) => acc + x, 0, [1, 2, 3]),  6));
+
+
+console.log('\nFunctional Utilities:');
+
+test('unique removes duplicates', () =>
+  assertEqual(unique([1, 2, 2, 3, 3, 3]), [1, 2, 3]));
+
+test('flatten reduces nesting by one level', () =>
+  assertEqual(flatten([[1, 2], [3, 4], [5]]), [1, 2, 3, 4, 5]));
+
+test('partition splits array by predicate', () =>
+  assertEqual(partition(x => x > 3, [1, 5, 2, 4, 3]), [[5, 4], [1, 2, 3]]));
+
+test('zip pairs two arrays together', () =>
+  assertEqual(zip(['a', 'b'], [1, 2]), [['a', 1], ['b', 2]]));
+
+test('take returns first n elements', () =>
+  assertEqual(take(3, [1, 2, 3, 4, 5]), [1, 2, 3]));
+
+test('sum calculates total of array', () =>
+  assertEqual(sum([10, 20, 30]), 60));
+
+
+console.log('\nImmutability Tests:');
+
+test('original array is not modified by map', () => {
+  const original = [1, 2, 3];
+  map(x => x * 2, original);
+  assertEqual(original, [1, 2, 3]);
+});
+
+test('original array is not modified by filter', () => {
+  const original = [1, 2, 3, 4];
+  filter(x => x > 2, original);
+  assertEqual(original, [1, 2, 3, 4]);
+});
+
+console.log('\n=== Tests Complete ===\n');
+
+
+
