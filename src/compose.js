@@ -14,7 +14,7 @@ const curry = (fn) => {
       ? fn(...args)
       : (...more) => curried(...args, ...more);
 
-  return curried;
+  return curried;as
 };
 
 const memoize = (fn) => {

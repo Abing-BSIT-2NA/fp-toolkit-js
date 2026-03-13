@@ -1,48 +1,69 @@
-const toUpper = (str) => str.toUpperCase();
-const toLower = (str) => str.toLowerCase();
+const {
+  toUpper, toLower, capitalize, toTitleCase,
+  toCamelCase, toSnakeCase, reverseStr,
+  wordCount, repeat, truncate
+} = require('../src/stringUtils');
 
-const capitalize = (str) =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
-const titleCase = (str) =>
-  str
-    .split(" ")
-    .map(capitalize)
-    .join(" ");
-
-const camelCase = (str) =>
-  str
-    .toLowerCase()
-    .split(" ")
-    .map((word, index) =>
-      index === 0 ? word : capitalize(word)
-    )
-    .join("");
-
-const snakeCase = (str) =>
-  str.toLowerCase().split(" ").join("_");
-
-const reverseStr = (str) =>
-  str.split("").reverse().join("");
-
-const wordCount = (str) =>
-  str.trim().split(/\s+/).length;
-
-const repeat = (n) => (str) =>
-  Array.from({ length: n }, () => str).join("");
-
-const truncate = (max) => (str) =>
-  str.length > max ? str.slice(0, max - 3) + "..." : str;
-
-module.exports = {
-  toUpper,
-  toLower,
-  capitalize,
-  titleCase,
-  camelCase,
-  snakeCase,
-  reverseStr,
-  wordCount,
-  repeat,
-  truncate
+const test = (desc, fn) => {
+  try { 
+    fn(); 
+    console.log(`PASS: ${desc}`); 
+  } catch (e) { 
+    console.log(`FAIL: ${desc} | Expected: ${e.expected}, Got: ${e.received}`); 
+  }
 };
+
+const assertEqual = (received, expected) => {
+  if (JSON.stringify(received) !== JSON.stringify(expected))
+    throw { received, expected };
+};
+
+console.log("\n=== String Utilities Tests ===");
+
+console.log("\nTransformations:");
+
+test('toUpper converts to uppercase', () =>
+  assertEqual(toUpper('hello'), 'HELLO')
+);
+
+test('capitalize first letter', () =>
+  assertEqual(capitalize('hello'), 'Hello')
+);
+
+test('toTitleCase converts words', () =>
+  assertEqual(toTitleCase('hello world'), 'Hello World')
+);
+
+test('toCamelCase converts string', () =>
+  assertEqual(toCamelCase('hello world'), 'helloWorld')
+);
+
+test('toSnakeCase converts string', () =>
+  assertEqual(toSnakeCase('Hello World'), 'hello_world')
+);
+
+console.log("\nUtilities:");
+
+test('reverseStr reverses string', () =>
+  assertEqual(reverseStr('hello'), 'olleh')
+);
+
+test('wordCount counts words', () =>
+  assertEqual(wordCount('Hello beautiful world'), 3)
+);
+
+console.log("\nCurried String Functions:");
+
+test('repeat(3)("ha") returns "hahaha"', () =>
+  assertEqual(repeat(3)('ha'), 'hahaha')
+);
+
+test('truncate(10)("Hello World") truncates', () =>
+  assertEqual(truncate(10)('Hello World'), 'Hello W...')
+);
+
+test('truncate(20)("Short") keeps original', () =>
+  assertEqual(truncate(20)('Short'), 'Short')
+);
+
+console.log("\n=== Tests Complete ===\n");
